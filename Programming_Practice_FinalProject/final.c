@@ -41,6 +41,14 @@ int main(void)
 						changeExists++;	
 						break;
 
+			case 3:		modifyStudentInfo(&studentList);
+						changeExists++;
+						break;
+
+			case 4:		deleteStudentInfo(&studentList);
+						changeExists++;
+						break;
+
 			case 5:		saveListToFile(&studentList); 
 						changeExists = 0;	
 						break;
@@ -83,6 +91,8 @@ void runMainMenu(int *choice)
 	printf("\tWhat do you want to do?\n");
 	printf("\t1. View student info\n");
 	printf("\t2. Add new student info\n");
+	printf("\t3. Modify student info\n");
+	printf("\t4. Delete student info\n");
 	printf("\t5. Save student info to file\n");	
 	printf("\t9. Quit\n");
 	printf("\n\tYour choice?>");
