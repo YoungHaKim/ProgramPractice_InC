@@ -78,11 +78,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="final.c" />
+    <ClCompile Include="main.c" />
     <ClCompile Include="list.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="final.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="list.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

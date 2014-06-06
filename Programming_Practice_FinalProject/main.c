@@ -4,24 +4,29 @@
 기말과제 
 */
 
+#include "main.h"
 #include "list.h"
-#include "final.h"
 
 int main(void)
 {
 	char buf[256];	
 	int lineCount = 0;
+	int fileOpenResult = 0;
 	FILE *fileRead = NULL, *fileWrite = NULL;
 	StudentList studentList;
 	studentList.count = 0; studentList.firstStudent = NULL; studentList.lastStudent = NULL;  // student list 초기화
 
-	if (openStudentFile(&fileRead, &fileWrite) == -1) return -1;	// data.txt 읽어오기, 없으면 만들기, 만들기 실패하면 종료하기
-		
-	while (fgets(buf, sizeof(buf), fileRead) != NULL)	// file 읽어서 구조체 할당하고 list에 추가하기
+	fileOpenResult = openStudentFile(&fileRead, &fileWrite);
+	if (fileOpenResult == -1) return -1;	// data.txt 읽어오기, 없으면 만들기, 만들기 실패하면 종료하기
+	
+	if (fileOpenResult == 0)
 	{
-		if (lineCount++ == 0) continue;	// 첫줄 무시		
-		Student *s = parseStudentStr(buf);
-		addStudentToList(s, &studentList);
+		while (fgets(buf, sizeof(buf), fileRead) != NULL)	// file 읽어서 구조체 할당하고 list에 추가하기
+		{
+			if (lineCount++ == 0) continue;	// 첫줄 무시		
+			Student *s = parseStudentStr(buf);
+			addStudentToList(s, &studentList);
+		}
 	}
 	if (fileRead) fclose(fileRead);
 	if (fileWrite) fclose(fileWrite);
@@ -109,7 +114,7 @@ void runMainMenu(int *choice)
 int openFileRead(const char* fileName, FILE **fp)
 {
 	fopen_s(fp, fileName, "r");
-	if (fp == NULL) {
+	if (*fp == NULL) {
 		printf("Error in file read open for %s\n", fileName);
 		return -1;
 	}
@@ -118,7 +123,7 @@ int openFileRead(const char* fileName, FILE **fp)
 int openFileWrite(const char* fileName, FILE **fp)
 {
 	fopen_s(fp, fileName, "w");
-	if (fp == NULL) {
+	if (*fp == NULL) {
 		printf("Error in file write open for %s\n", fileName);
 		return -1;
 	}
@@ -139,6 +144,8 @@ int openStudentFile(FILE **fileRead, FILE **fileWrite)
 			printf("Created empty data.txt, because file did not exist\n");
 			fprintf(*fileWrite, "%s\t%s\t%s\t%s\t\n", "회원ID", "회원이름", "회원주소", "핸드폰번호");
 			fflush(*fileWrite);
+
+			return 1;
 		}
 	}
 

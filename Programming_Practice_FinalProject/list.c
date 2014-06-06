@@ -6,9 +6,14 @@
 
 #include "list.h"
 
+g_largestID = 0;
+
 void addStudentToList(Student *s, StudentList *list)
 {
 	s->nextStudentPtr = NULL;
+
+	if (s->id > g_largestID)
+		g_largestID = s->id;
 
 	if (list->count == 0)
 	{
@@ -18,15 +23,7 @@ void addStudentToList(Student *s, StudentList *list)
 	}
 	else
 	{
-		Student *sPtr;
-		sPtr = list->firstStudent;
-		while (sPtr->nextStudentPtr != NULL)
-		{
-			sPtr = sPtr->nextStudentPtr;
-		}
-
-		sPtr->nextStudentPtr = s;
-
+		list->lastStudent->nextStudentPtr = s;
 		list->lastStudent = s;
 		list->count++;
 	}
@@ -181,23 +178,16 @@ void addNewStudent(StudentList *list)
 {
 	Student *ptr = list->firstStudent;
 	Student *s = (Student*)malloc(sizeof(Student));
-	int largestId = ptr->id;	
+	int largestId = g_largestID;
 	char nameInput[20];
-	char phoneInput[25];
+	char phoneInput[25];	
+	char addressInput[40];
 
 	if (s == NULL) {
 		printf("\n Memory Allocation Error in creating new student!\n\n");
 		return;
 	}
-	
-	while (ptr != NULL)
-	{
-		if (ptr->id > largestId)
-			largestId = ptr->id;
-
-		ptr = ptr->nextStudentPtr;
-	}
-	
+		
 	largestId++;
 	s->id = largestId;
 	printf("\n\tID\t\t:%d\n", s->id);
@@ -208,37 +198,50 @@ void addNewStudent(StudentList *list)
 	getPhoneInput(phoneInput);
 	strcpy(s->phoneNum, phoneInput);
 
-	printf("\tEnter Address\t:");
-	gets(s->address);
+	getAddressInput(addressInput);
+	strcpy(s->address, addressInput);
 	
 	addStudentToList(s, list);
 
+	printf("\n\tSuccessfully added new student to list!\n");
+	printStudentInfo(s);
 }
 
 void getNameInput(char *name)
 {
-
 	fflush(stdin);
+	char buf[256];
 
 	do {
 		printf("\tEnter Name\t:");
-		gets(name);
+		gets(buf);
 		
-		if (strlen(name) > 20)
+		if (strlen(buf) > 20)
 		{
 			printf("Sorry, name input cannot be longer than 20 characters\n");  // long name의 예: Sergey Aleynikov 도 20글자 이내임
 		}
-	} while (strlen(name) > 20);
+	} while (strlen(buf) > 20);
+
+	for (int i = 0; i < 20; i++)
+	{
+		name[i] = buf[i];
+		if (buf[i] == '\0') break;
+	}
 }
 void getPhoneInput(char *phoneInput)
 {
-	fflush(stdin);
+	
+	char bug[256];
+	int inputError = 0;
 
 	do {
-		printf("\tEnter PhoneNum\t:");
-		gets(phoneInput);
+		fflush(stdin);
+		inputError = 0;
 
-		int upperBound = strlen(phoneInput);
+		printf("\tEnter PhoneNum\t:");
+		gets(bug);
+
+		int upperBound = strlen(bug);
 		char space = ' ';
 		char zero = '0';
 		char nine = '9';
@@ -246,31 +249,63 @@ void getPhoneInput(char *phoneInput)
 		char dash = '-';
 		char parenLeft = '(';
 		char parenRight = ')';
-
-		for (int i = 0; i < (int)strlen(phoneInput); i++)
+		
+		if (strlen(bug) > 25) // 최대한 긴 번호, 국제전화의 경우도 25글자 이내임  +62 (2) 43 5674 2339
 		{
-			if (phoneInput[i] < zero || phoneInput[i] > nine) {
-				if (phoneInput[i] != plus && phoneInput[i] != dash
-					&& phoneInput[i] != parenLeft && phoneInput[i] != parenRight
-					&& phoneInput[i] != space) {
-					printf("Error in input! you typed %c in phone num\n", phoneInput[i]);
+			printf("Error in input! phone number cannot be longer than 25 chars!\n");
+			inputError = 1;
 
-					continue;
+			continue;
+		}
+
+		for (int i = 0; i < (int)strlen(bug); i++)
+		{
+			if (bug[i] == '\0') break;
+
+			if (bug[i] < zero || bug[i] > nine) {
+				if (bug[i] != plus && bug[i] != dash
+					&& bug[i] != parenLeft && bug[i] != parenRight
+					&& bug[i] != space) {
+
+					printf("Error in input! you typed %c in phone num\n", bug[i]);
+
+					inputError = 1;
+					break;
 				}
 			}
 		}
 
-		if (strlen(phoneInput) > 25) // 최대한 긴 번호, 국제전화의 경우도 25글자 이내임  +62 (2) 43 5674 2339
+	} while (inputError == 1);
+
+	for (int i = 0; i < 25; i++)
+	{
+		phoneInput[i] = bug[i];
+		if (phoneInput[i] == '\0') break;
+	}
+}
+void getAddressInput(char *address)
+{
+	fflush(stdin);
+	char buf[256];
+
+	do {
+		printf("\tEnter address\t:");
+		gets(buf);
+
+		if (strlen(buf) > 39)
 		{
-			printf("Error in input! phone number cannot be longer than 25 chars!\n");
+			printf("Sorry, address input cannot be longer than 40 characters\n");  // long name의 예: Sergey Aleynikov 도 20글자 이내임
+			
 			continue;
 		}
+	} while (strlen(buf) > 39);
 
-		break;
-
-	} while (1);
+	for (int i = 0; i < 40; i++)
+	{
+		address[i] = buf[i];
+		if (buf[i] == '\0') break;
+	}
 }
-
 
 void modifyStudentInfo(StudentList *list)
 {

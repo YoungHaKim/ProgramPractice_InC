@@ -1,7 +1,7 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include "final.h"
+#include "main.h"
 
 
 typedef struct student_ {
@@ -19,6 +19,8 @@ typedef struct studentList_ {
 	int count;
 } StudentList;
 
+int g_largestID;
+
 void addStudentToList(Student *s, StudentList *list);
 void deleteStudentFromList(Student *s, StudentList *list);
 void cleanupOnExit(StudentList *list, FILE *readFile, FILE *writeFile);
@@ -31,6 +33,7 @@ void addNewStudent(StudentList *s);
 
 void getNameInput(char *name);
 void getPhoneInput(char *phone);
+void getAddressInput(char *address);
 
 int findStudent(StudentList *list, Student **s);
 
